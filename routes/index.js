@@ -12,7 +12,7 @@ var knex = require('knex')({
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Linked In Login App' });
 });
 
 module.exports = router;
