@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var auth = require('./routes/auth');
 
 var app = express();
 
@@ -16,8 +17,6 @@ var LinkedInStrategy = require('passport-linkedin').Strategy;
 
 require('dotenv').load();
 
-//get auth.js module
-var auth = require('./routes/auth');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -39,15 +38,6 @@ app.use(cookieSession({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(function(user, done) {
-  //later this will be where you selectively send to the browser an identifier for your user, like their primary key from the database, or their ID from linkedin
-  done(null, user);
-});
-
-passport.deserializeUser(function(obj, done) {
-  //here is where you will go to the database and get the user each time from it's id, after you set up your db
-  done(null, obj);
-});
 
 passport.use(new LinkedInStrategy({
     consumerKey: process.env['LINKEDIN_API_KEY'],
@@ -64,10 +54,22 @@ passport.use(new LinkedInStrategy({
       return done(null, profile);
 }));
 
+passport.serializeUser(function(user, done) {
+  //console.log(user);
+  //later this will be where you selectively send to the browser an identifier for your user, like their primary key from the database, or their ID from linkedin
+  done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+  //here is where you will go to the database and get the user each time from it's id, after you set up your db
+  done(null, obj);
+});
+
 
 app.use('/', routes);
 app.use('/users', users);
 app.use('/auth', auth);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
